@@ -1,4 +1,13 @@
-import PySimpleGUI as sg
+import tkinter as tk
+from tkinter import simpledialog
 
+window = tk.Tk()
 
-sg.Window(title="Hello World", layout=[[]], margins=(100, 50)).read()
+# ROOT.withdraw()
+window.mainloop()
+# the input dialog
+# USER_INP = simpledialog.askstring(title="Test",
+#                                   prompt="What's your Name?:")
+
+# check it out
+# print("Hello", USER_INP)

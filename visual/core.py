@@ -23,7 +23,6 @@ def create_solution(solution, turns):
         }
         draw_track(x, y, label)
     
-    tractor.color('orange')
     
     for i in range(len(solution) - 1):
         if i == len(track_dictionary) - 1:
@@ -105,10 +104,11 @@ def draw_track(x, y, label, height=100):
 
 
 def create_arc(tractor, x1, y1, x2, y2, start=0, extent=90):
+    tractor.color('orange')
     radius = min(abs(x2 - x1), abs(y2 - y1)) / 2
     cx, cy = x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2
 
-    # tractor.penup()
+    tractor.penup()
     tractor.setposition(max(x1, x2), cy)
     tractor.pendown()
     tractor.setheading(90)
@@ -124,6 +124,7 @@ def create_arc(tractor, x1, y1, x2, y2, start=0, extent=90):
 
 
 def create_omega(tractor, x1, y1, x2, y2, start=0, extent=90):
+    tractor.color('blue')
     radius = min(abs(x2 - x1), abs(y2 - y1)) / 2
     cx, cy = x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2
 
@@ -135,7 +136,6 @@ def create_omega(tractor, x1, y1, x2, y2, start=0, extent=90):
     position = tractor.position()
 
     tractor.pendown()
-    tractor.write('start', align="center")
     tractor.backward(20)
     tractor.left(30)
     tractor.circle(20+radius, extent=extent)
