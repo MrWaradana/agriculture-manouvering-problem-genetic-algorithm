@@ -46,7 +46,7 @@ def main():
                 turn = "U-turn" if data["best_turns"][i-1]== 0 else "Omega-turn"
                 print("Using ", turn,",truck should move to track ", data["best_solution"][i])
         
-        create_solution(data["best_solution"], data["best_turns"])
+        create_solution(int(data["best_solution"]), data["best_turns"])
         
     else:
         print("Error: ", req.status_code)
