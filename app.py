@@ -49,7 +49,7 @@ def main():
         # turn solution to int
         data["best_solution"] = [int(i) for i in data["best_solution"]]
         
-        create_solution(data["best_solution"], data["best_turns"])
+        create_solution(data["best_solution"], data["best_turns"], data["best_fitness"])
         
     else:
         print("Error: ", req.status_code)
