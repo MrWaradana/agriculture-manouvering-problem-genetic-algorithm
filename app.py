@@ -1,6 +1,7 @@
 """Main Application"""
 
 import requests
+from visual.core import create_solution
 
 # Check web-production-0a28.up.railway.app/docs for API documentation
 API_URL = "https://web-production-0a28.up.railway.app/runarp"
@@ -45,9 +46,10 @@ def main():
                 turn = "U-turn" if data["best_turns"][i-1]== 0 else "Omega-turn"
                 print("Using ", turn,",truck should move to track ", data["best_solution"][i])
         
+        create_solution(data["best_solution"], data["best_turns"])
+        
     else:
         print("Error: ", req.status_code)
-    
     
     
 if __name__ == "__main__":
