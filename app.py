@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox
 import tkinter as tk
 import turtle 
 
+from threading import Thread
+
 from api.core import requestApi
 
 
@@ -18,6 +20,7 @@ canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10, pady=14)
 
 tractor = turtle.RawTurtle(canvas)
 
+
 def reset():
     tractor.reset()
 
@@ -30,6 +33,7 @@ def start():
 
     if tracks == 0 or radius == 0 or width == 0 or run == 0:
         messagebox.showerror('Input Error', 'Please input valid number')
+        fetching_done()
         return
 
   
@@ -37,6 +41,7 @@ def start():
 
     if not res["status"]:
         messagebox.showerror('Fetch Error', 'Error when fetch the data')
+        fetching_done()
         return
 
     solution, turns, fitness = res["solution"], res["turns"], res["fitness"]
@@ -292,6 +297,27 @@ def start():
         print(i, track_dictionary[i])
 
     # tractor.clear()
+    fetching_done()
+
+def fetching():
+    progress_label.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
+    progress_bar.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
+    progress_bar.start(10)
+
+def fetching_done():
+    start_button['state'] = tk.NORMAL
+    reset_button['state'] = tk.NORMAL
+    progress_bar.pack_forget()
+    progress_label.pack_forget()
+
+def threading():
+    # Call work function
+    t1=Thread(target=start)
+    t1.start()
+    fetching()
+
+    start_button['state'] = tk.DISABLED
+    reset_button['state'] = tk.DISABLED
 
 
 tracks_entry = tk.DoubleVar()
@@ -310,8 +336,11 @@ run_entry = tk.DoubleVar()
 tk.Label(root, text="Enter run numbers: ").pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 tk.Entry(root, textvariable=run_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X)
 
-tk.Button(root, text="Start Draw", command=start , bg='lightgreen').pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
-tk.Button(root, text="Reset", command=reset, bg='red').pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
-
+start_button = tk.Button(root, text="Start Draw", command=threading , bg='lightgreen',  state = tk.NORMAL)
+start_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
+reset_button = tk.Button(root, text="Reset", command=reset, bg='red',  state = tk.NORMAL)
+reset_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
+progress_bar = ttk.Progressbar(root, orient="horizontal", length=200, mode="indeterminate")
+progress_label = tk.Label(root, text="Fetching data, Please wait")
 
 root.mainloop()
