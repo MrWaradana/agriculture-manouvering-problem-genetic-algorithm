@@ -45,6 +45,7 @@ def start():
         return
 
     solution, turns, fitness = res["solution"], res["turns"], res["fitness"]
+    fetching_done()
     
     # solution = [18, 15, 19, 14, 17, 13, 16, 11, 8, 12, 10, 7, 3, 6, 9, 5, 1, 4, 0, 2]
     # turns = [0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
@@ -297,7 +298,7 @@ def start():
         print(i, track_dictionary[i])
 
     # tractor.clear()
-    fetching_done()
+  
 
 def fetching():
     progress_label.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
