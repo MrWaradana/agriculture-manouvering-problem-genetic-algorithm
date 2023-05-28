@@ -4,17 +4,8 @@ import tkinter as tk
 import turtle as turtle
 
 
+## Root configuration
 root = tk.Tk()
-
-# ROOT.withdraw()
-# root.mainloop()
-# the input dialog
-# USER_INP = simpledialog.askstring(title="Test",
-#                                   prompt="What's your Name?:")
-
-# check it out
-# print("Hello", USER_INP)
-
 root.title('Agriculture Maneuvering Problem')
 root.geometry('1980x1080')
 root.config(bg='gray')
@@ -25,8 +16,10 @@ canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10, pady=14)
 
 tractor = turtle.RawTurtle(canvas)
 
+
 def reset():
     tractor.clear()
+
 
 def start():
     solution = [18, 15, 19, 14, 17, 13, 16, 11, 8, 12, 10, 7, 3, 6, 9, 5, 1, 4, 0, 2]
@@ -293,6 +286,7 @@ def start():
 
     # tractor.clear()
 
+
 tracks_entry = tk.DoubleVar()
 tk.Label(root, text="Enter number of tracks: ").pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 tk.Entry(root, textvariable=tracks_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X)
@@ -307,9 +301,6 @@ tk.Entry(root, textvariable=run_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fill=
 
 tk.Button(root, text="Start", command=start, bg='lightgreen').pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 tk.Button(root, text="Reset", command=reset, bg='red').pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
-
-
-
 
 
 root.mainloop()

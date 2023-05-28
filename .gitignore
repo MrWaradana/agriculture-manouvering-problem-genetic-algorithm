@@ -1,3 +1,4 @@
 env/
 build/
 app.spec
+*/_pycache_/
