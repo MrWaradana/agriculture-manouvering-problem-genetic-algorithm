@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import ttk, messagebox
 import tkinter as tk
 import turtle 
-
 from threading import Thread
 
 from api.core import requestApi
@@ -20,24 +19,30 @@ canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1, padx=10, pady=14)
 
 tractor = turtle.RawTurtle(canvas)
 
+# is_reset = False
 
 def reset():
     tractor.reset()
 
-
 def start():
+
+    if not tractor.position() == (0.00, 0.00):
+        messagebox.showerror('Error', 'Please reset first')
+        fetching_done()
+        return
+
     tracks = int(tracks_entry.get())
     radius = float(radius_entry.get())
-    width = float(width_entry.get())
+    width_api = float(width_entry.get())
     run = int(run_entry.get())
 
-    if tracks == 0 or radius == 0 or width == 0 or run == 0:
+    if tracks == 0 or radius == 0 or width_api == 0 or run == 0:
         messagebox.showerror('Input Error', 'Please input valid number')
         fetching_done()
         return
 
   
-    res = requestApi(tracks, radius, width, run)
+    res = requestApi(tracks, radius, width_api, run)
 
     if not res["status"]:
         messagebox.showerror('Fetch Error', 'Error when fetch the data')
@@ -58,6 +63,7 @@ def start():
     start_x = -440
     start_y = 0
     height = 100
+    width = 25
     speed = 0
     track_dictionary = {}
 
@@ -92,29 +98,46 @@ def start():
         tractor.backward(height)
 
 
-    def create_arc(tractor, x1, y1, x2, y2, start=0, extent=90):
+    def create_arc(tractor, x1, y1, x2, y2, start, extent=90):
         tractor.color('orange')
         radius = abs(x1-x2)  / 2
         cx, cy = x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2
 
         tractor.penup()
-        tractor.setposition(max(x1, x2), cy)
-        tractor.setheading(90)
-        tractor.pendown()
-        tractor.circle(radius, extent=start)
-        position = tractor.position()
+        # tractor.setposition(max(x1, x2), cy)
+        # tractor.setheading(90)
+        # tractor.pendown()
+        # tractor.circle(radius, extent=start)
+        # position = tractor.position()
+        if(start == 'left_up'):
+            tractor.setposition(max(x1, x2), cy)
+            tractor.setheading(90)
+            tractor.pendown()
+        elif(start == 'right_up'):
+            tractor.setposition(min(x1, x2), cy)
+            tractor.setheading(270)
+            tractor.pendown()
+        elif(start == 'left_down'):
+            tractor.setposition(min(x1, x2), cy)
+            tractor.setheading(270)
+            tractor.pendown()
+        elif(start == 'right_down'):
+            tractor.setposition(max(x1, x2), cy)
+            tractor.setheading(90)
+            tractor.pendown()
 
-        tractor.pendown()
-        # tractor.penup()
         tractor.circle(radius, extent=extent)
         tractor.penup()
-        tractor.setposition(cx, cy)
-        tractor.setposition(position)
+        # tractor.pendown()
+        # tractor.circle(radius, extent=extent)
+        # tractor.penup()
+        # tractor.setposition(cx, cy)
+        # tractor.setposition(position)
 
 
     def create_omega_top(tractor, x1, y1, x2, y2, start, extent=90):
         tractor.color('blue')
-        radius = min(abs(x2 - x1), abs(y2 - y1)) / 2
+        radius = abs(x1-x2) / 2
         cx, cy = x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2
 
         tractor.penup()
@@ -144,7 +167,7 @@ def start():
 
     def create_omega_down(tractor, x1, y1, x2, y2, start, extent=90):
         tractor.color('blue')
-        radius = min(abs(x2 - x1), abs(y2 - y1)) / 2
+        radius = abs(x1-x2) / 2
         cx, cy = x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2
 
         tractor.penup()
@@ -202,7 +225,7 @@ def start():
                         track_dictionary[solution[i]]["top"]["y"],
                         track_dictionary[solution[i + 1]]["down"]["x"],
                         track_dictionary[solution[i + 1]]["down"]["y"],
-                        start=0,
+                        start='left_up',
                         extent=180,
                     )
                 else:
@@ -212,7 +235,7 @@ def start():
                         track_dictionary[solution[i]]["top"]["y"],
                         track_dictionary[solution[i + 1]]["down"]["x"],
                         track_dictionary[solution[i + 1]]["down"]["y"],
-                        start=180,
+                        start='right_up',
                         extent=-180,
                     )
             else:
@@ -250,15 +273,26 @@ def start():
             # )
         else:
             if(turns[i] == 0):
-                create_arc(
-                tractor,
-                track_dictionary[solution[i]]["down"]["x"],
-                track_dictionary[solution[i]]["down"]["y"],
-                track_dictionary[solution[i + 1]]["top"]["x"],
-                -200,
-                start=-180,
-                extent=180,
-                )
+                if(solution[i] > solution[i+1] ):
+                    create_arc(
+                    tractor,
+                    track_dictionary[solution[i]]["down"]["x"],
+                    track_dictionary[solution[i]]["down"]["y"],
+                    track_dictionary[solution[i + 1]]["top"]["x"],
+                    -200,
+                    start='right_down',
+                    extent=-180,
+                    )
+                else:
+                                    create_arc(
+                    tractor,
+                    track_dictionary[solution[i]]["down"]["x"],
+                    track_dictionary[solution[i]]["down"]["y"],
+                    track_dictionary[solution[i + 1]]["top"]["x"],
+                    -200,
+                    start='left_down',
+                    extent=180,
+                    )
             else:
                 if(solution[i] > solution[i+1] ):
                     create_omega_down(
@@ -304,21 +338,30 @@ def fetching():
     progress_label.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
     progress_bar.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
     progress_bar.start(10)
+    # cancel_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
+
+
 
 def fetching_done():
     start_button['state'] = tk.NORMAL
     reset_button['state'] = tk.NORMAL
     progress_bar.pack_forget()
     progress_label.pack_forget()
+    # cancel_button.pack_forget()
 
 def threading():
     # Call work function
     t1=Thread(target=start)
     t1.start()
     fetching()
-
     start_button['state'] = tk.DISABLED
     reset_button['state'] = tk.DISABLED
+
+# def cancel():
+#     fetching_done()
+#     t1.join()
+#     messagebox.showwarning("Warning", "Operation Cancelled...")
+#     tractor.reset()
 
 
 tracks_entry = tk.DoubleVar()
@@ -328,7 +371,7 @@ tk.Entry(root, textvariable=tracks_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fi
 radius_entry = tk.DoubleVar()
 tk.Label(root, text="Enter radius of circle: ").pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 tk.Entry(root, textvariable=radius_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X)
-
+    
 width_entry = tk.DoubleVar()
 tk.Label(root, text="Enter width between each track: ").pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 tk.Entry(root, textvariable=width_entry).pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X)
@@ -341,6 +384,8 @@ start_button = tk.Button(root, text="Start Draw", command=threading , bg='lightg
 start_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=14)
 reset_button = tk.Button(root, text="Reset", command=reset, bg='red',  state = tk.NORMAL)
 reset_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
+# cancel_button = tk.Button(root, text="Cancel", command=cancel, bg='yellow',  state = tk.NORMAL)
+# cancel_button.pack(ipadx=6, ipady=3, anchor=tk.W, fill=tk.X, pady=4)
 progress_bar = ttk.Progressbar(root, orient="horizontal", length=200, mode="indeterminate")
 progress_label = tk.Label(root, text="Fetching data, Please wait")
 
